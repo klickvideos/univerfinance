@@ -1,1 +1,1027 @@
-placeholder-capture
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniverFinance — Inteligência Financeira Empresarial</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2035;--bg4:#232d45;
+--accent:#6366f1;--accent2:#818cf8;--accent3:#4f46e5;
+--green:#22c55e;--green2:#16a34a;--red:#ef4444;--red2:#dc2626;
+--yellow:#eab308;--orange:#f97316;--cyan:#06b6d4;--pink:#ec4899;
+--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+--border:#1e293b;--shadow:0 4px 24px rgba(0,0,0,.3);
+--radius:12px;--radius2:8px;
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+.sidebar .logo{padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.sidebar .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff}
+.sidebar .logo h1{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar .logo span{font-size:11px;color:var(--text3);display:block;-webkit-text-fill-color:var(--text3)}
+.sidebar nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:16px 12px 8px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius2);color:var(--text2);cursor:pointer;transition:all .2s;font-size:14px;margin-bottom:2px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(99,102,241,.15);color:var(--accent2);font-weight:600}
+.nav-item i{width:20px;text-align:center;font-size:15px}
+.nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.company-selector{background:var(--bg3);border-radius:var(--radius2);padding:12px;cursor:pointer;transition:all .2s}
+.company-selector:hover{background:var(--bg4)}
+.company-selector .label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.company-selector .name{font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+/* MAIN */
+.main{margin-left:260px;min-height:100vh}
+.topbar{position:sticky;top:0;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-left h2{font-size:20px;font-weight:700}
+.topbar-left .sub{font-size:13px;color:var(--text3)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:8px 12px;border-radius:var(--radius2);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:all .2s}
+.topbar-btn:hover{background:var(--bg4);color:var(--text)}
+.topbar-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.topbar-btn.primary:hover{background:var(--accent3)}
+.period-select{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:var(--radius2);font-size:13px;cursor:pointer}
+.period-select option{background:var(--bg2)}
+.notification-bell{position:relative}
+.notification-bell .dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+.content{padding:24px 32px}
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+/* CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .3s}
+.kpi-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi-card .kpi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.kpi-card .kpi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.kpi-card .kpi-trend{font-size:12px;display:flex;align-items:center;gap:4px;font-weight:600}
+.kpi-card .kpi-trend.up{color:var(--green)}
+.kpi-card .kpi-trend.down{color:var(--red)}
+.kpi-card .kpi-value{font-size:26px;font-weight:800;margin-bottom:4px}
+.kpi-card .kpi-label{font-size:13px;color:var(--text3)}
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-grid.equal{grid-template-columns:1fr 1fr}
+.chart-grid.triple{grid-template-columns:1fr 1fr 1fr}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.chart-card .chart-title{font-size:15px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.chart-card .chart-subtitle{font-size:12px;color:var(--text3);margin-bottom:16px}
+.chart-card canvas{max-height:300px}
+.full-width{grid-column:1/-1}
+/* TABLE */
+.table-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
+.table-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.table-header h3{font-size:15px;font-weight:600}
+.table-filters{display:flex;gap:8px}
+.filter-chip{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s}
+.filter-chip:hover,.filter-chip.active{background:rgba(99,102,241,.15);color:var(--accent2);border-color:var(--accent)}
+table{width:100%;border-collapse:collapse}
+table th{text-align:left;padding:10px 16px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border)}
+table td{padding:12px 16px;font-size:13px;border-bottom:1px solid rgba(30,41,59,.5)}
+table tr:hover{background:rgba(99,102,241,.04)}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.tag.business{background:rgba(99,102,241,.15);color:var(--accent2)}
+.tag.personal{background:rgba(236,72,153,.15);color:var(--pink)}
+.tag.cat{background:rgba(6,182,212,.12);color:var(--cyan)}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+/* CALENDAR */
+.calendar-container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.calendar-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.calendar-header h3{font-size:16px;font-weight:600}
+.calendar-nav{display:flex;align-items:center;gap:12px}
+.calendar-nav button{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:var(--radius2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.calendar-nav button:hover{background:var(--bg4);color:var(--text)}
+.calendar-nav span{font-size:15px;font-weight:600;min-width:160px;text-align:center}
+.calendar-views{display:flex;gap:4px}
+.calendar-views button{background:transparent;border:1px solid var(--border);color:var(--text3);padding:6px 14px;border-radius:var(--radius2);font-size:12px;cursor:pointer;transition:all .2s}
+.calendar-views button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.calendar-day-header{padding:10px;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.calendar-cell{min-height:100px;border:1px solid rgba(30,41,59,.3);padding:6px;position:relative}
+.calendar-cell.other-month{opacity:.3}
+.calendar-cell.today{background:rgba(99,102,241,.08)}
+.calendar-cell .day-number{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text2)}
+.calendar-cell.today .day-number{color:var(--accent2);background:rgba(99,102,241,.2);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cal-event{font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-event.payable{background:rgba(239,68,68,.2);color:var(--red);border-left:2px solid var(--red)}
+.cal-event.receivable{background:rgba(34,197,94,.2);color:var(--green);border-left:2px solid var(--green)}
+.cal-event.subscription{background:rgba(99,102,241,.2);color:var(--accent2);border-left:2px solid var(--accent)}
+.cal-event.invoice{background:rgba(249,115,22,.2);color:var(--orange);border-left:2px solid var(--orange)}
+/* UPLOAD AREA */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:48px;text-align:center;cursor:pointer;transition:all .3s;background:var(--bg2)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(99,102,241,.05)}
+.upload-zone i{font-size:48px;color:var(--accent);margin-bottom:16px}
+.upload-zone h3{font-size:18px;margin-bottom:8px}
+.upload-zone p{color:var(--text3);font-size:14px}
+.upload-pipeline{display:flex;align-items:center;gap:0;margin:32px 0}
+.pipeline-step{flex:1;text-align:center;position:relative}
+.pipeline-step .step-icon{width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:20px;color:var(--text3);transition:all .5s}
+.pipeline-step.active .step-icon{background:rgba(99,102,241,.2);border-color:var(--accent);color:var(--accent2)}
+.pipeline-step.done .step-icon{background:rgba(34,197,94,.2);border-color:var(--green);color:var(--green)}
+.pipeline-step .step-label{font-size:12px;color:var(--text3);font-weight:500}
+.pipeline-step .step-sublabel{font-size:10px;color:var(--text3);opacity:.7}
+.pipeline-connector{width:60px;height:2px;background:var(--border);margin-bottom:24px}
+.pipeline-connector.active{background:linear-gradient(90deg,var(--accent),var(--green))}
+/* ALERTS */
+.alert-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.alert-card.warning{border-left:3px solid var(--yellow)}
+.alert-card.danger{border-left:3px solid var(--red)}
+.alert-card.info{border-left:3px solid var(--cyan)}
+.alert-card .alert-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.alert-card.warning .alert-icon{background:rgba(234,179,8,.15);color:var(--yellow)}
+.alert-card.danger .alert-icon{background:rgba(239,68,68,.15);color:var(--red)}
+.alert-card.info .alert-icon{background:rgba(6,182,212,.15);color:var(--cyan)}
+.alert-content h4{font-size:14px;margin-bottom:4px}
+.alert-content p{font-size:12px;color:var(--text3)}
+/* CASHFLOW */
+.cashflow-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+.cashflow-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.cashflow-box .cf-value{font-size:28px;font-weight:800;margin:8px 0 4px}
+.cashflow-box .cf-label{font-size:13px;color:var(--text3)}
+.cashflow-box.income .cf-value{color:var(--green)}
+.cashflow-box.expense .cf-value{color:var(--red)}
+.cashflow-box.balance .cf-value{color:var(--accent2)}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:560px;max-height:80vh;overflow-y:auto;padding:24px}
+.modal h3{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal .form-group{margin-bottom:14px}
+.modal label{display:block;font-size:12px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.modal input,.modal select,.modal textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:var(--radius2);font-size:14px}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--accent)}
+.modal .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+/* PROGRESS */
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-bar .fill{height:100%;border-radius:3px;transition:width .5s}
+/* MULTI COMPANY */
+.company-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.company-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .3s}
+.company-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.company-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.company-card h4{font-size:16px;margin-bottom:4px}
+.company-card .company-type{font-size:12px;color:var(--text3);margin-bottom:12px}
+.company-card .company-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.company-card .stat{text-align:center;padding:8px;background:var(--bg3);border-radius:var(--radius2)}
+.company-card .stat-val{font-size:16px;font-weight:700}
+.company-card .stat-label{font-size:10px;color:var(--text3)}
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.fade-in{animation:fadeIn .4s ease}
+.pulse{animation:pulse 2s infinite}
+/* SCROLL */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+/* RESPONSIVE */
+@media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.chart-grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+/* Extras */
+.text-green{color:var(--green)}.text-red{color:var(--red)}.text-yellow{color:var(--yellow)}.text-accent{color:var(--accent2)}.text-muted{color:var(--text3)}
+.flex{display:flex}.items-center{align-items:center}.gap-2{gap:8px}.gap-4{gap:16px}.justify-between{justify-content:space-between}
+.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}.mt-4{margin-top:16px}
+.font-bold{font-weight:700}.text-sm{font-size:13px}.text-xs{font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">UF</div>
+    <div><h1>UniverFinance</h1><span>Inteligência Financeira</span></div>
+  </div>
+  <nav>
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i>Dashboard<span class="badge">3</span></div>
+    <div class="nav-item" data-page="transactions"><i class="fas fa-exchange-alt"></i>Transações</div>
+    <div class="nav-item" data-page="upload"><i class="fas fa-cloud-upload-alt"></i>Upload Faturas</div>
+    <div class="nav-item" data-page="calendar"><i class="fas fa-calendar-alt"></i>Calendário</div>
+    <div class="nav-section">Análise</div>
+    <div class="nav-item" data-page="analytics"><i class="fas fa-chart-bar"></i>Análises Avançadas</div>
+    <div class="nav-item" data-page="cashflow"><i class="fas fa-water"></i>Fluxo de Caixa</div>
+    <div class="nav-item" data-page="alerts"><i class="fas fa-exclamation-triangle"></i>Alertas<span class="badge">5</span></div>
+    <div class="nav-section">Gestão</div>
+    <div class="nav-item" data-page="companies"><i class="fas fa-building"></i>Empresas</div>
+    <div class="nav-item" data-page="cards"><i class="fas fa-credit-card"></i>Cartões & Bancos</div>
+    <div class="nav-item" data-page="automation"><i class="fas fa-robot"></i>Automação</div>
+    <div class="nav-section">Sistema</div>
+    <div class="nav-item" data-page="settings"><i class="fas fa-cog"></i>Configurações</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="company-selector" onclick="showPage('companies')">
+      <div class="label">Empresa ativa</div>
+      <div class="name" id="activeCompanyName">Lizzon Ltda <i class="fas fa-chevron-down" style="font-size:11px"></i></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn" id="menuToggle" style="display:none" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+      <div>
+        <h2 id="pageTitle">Dashboard Executivo</h2>
+        <div class="sub" id="pageSubtitle">Visão geral financeira — Março 2026</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <select class="period-select" id="periodSelect">
+        <option>Março 2026</option>
+        <option>Fevereiro 2026</option>
+        <option>Janeiro 2026</option>
+        <option>Q1 2026</option>
+        <option>Ano 2026</option>
+      </select>
+      <button class="topbar-btn" onclick="openModal('addTransaction')"><i class="fas fa-plus"></i> Nova Transação</button>
+      <button class="topbar-btn primary" onclick="showPage('upload')"><i class="fas fa-upload"></i> Upload PDF</button>
+      <div class="notification-bell topbar-btn" onclick="showPage('alerts')"><i class="fas fa-bell"></i><div class="dot"></div></div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="kpi-grid fade-in">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(239,68,68,.15);color:var(--red)"><i class="fas fa-arrow-down"></i></div>
+            <div class="kpi-trend down"><i class="fas fa-arrow-up"></i> +12%</div>
+          </div>
+          <div class="kpi-value">R$ 47.832</div>
+          <div class="kpi-label">Total de Despesas</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--green)"><i class="fas fa-arrow-up"></i></div>
+            <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +24%</div>
+          </div>
+          <div class="kpi-value">R$ 89.450</div>
+          <div class="kpi-label">Total de Receitas</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(99,102,241,.15);color:var(--accent2)"><i class="fas fa-wallet"></i></div>
+            <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +8%</div>
+          </div>
+          <div class="kpi-value">R$ 41.618</div>
+          <div class="kpi-label">Saldo Líquido</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(234,179,8,.15);color:var(--yellow)"><i class="fas fa-credit-card"></i></div>
+            <div class="kpi-trend down"><i class="fas fa-exclamation"></i> 73%</div>
+          </div>
+          <div class="kpi-value">73%</div>
+          <div class="kpi-label">Uso do Limite</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(249,115,22,.15);color:var(--orange)"><i class="fas fa-building"></i></div>
+            <div class="kpi-trend up"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="kpi-value">R$ 38.200</div>
+          <div class="kpi-label">Despesas Negócio</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="background:rgba(236,72,153,.15);color:var(--pink)"><i class="fas fa-user"></i></div>
+            <div class="kpi-trend down"><i class="fas fa-arrow-down"></i> -5%</div>
+          </div>
+          <div class="kpi-value">R$ 9.632</div>
+          <div class="kpi-label">Despesas Pessoais</div>
+        </div>
+      </div>
+
+      <div class="chart-grid fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-chart-area" style="color:var(--accent2)"></i> Evolução Mensal</div>
+          <div class="chart-subtitle">Receitas vs Despesas — últimos 6 meses</div>
+          <canvas id="chartEvolution"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-chart-pie" style="color:var(--cyan)"></i> Gastos por Categoria</div>
+          <div class="chart-subtitle">Distribuição — Março 2026</div>
+          <canvas id="chartCategories"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-grid equal fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-credit-card" style="color:var(--orange)"></i> Gastos por Cartão</div>
+          <div class="chart-subtitle">Distribuição entre cartões</div>
+          <canvas id="chartCards"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-balance-scale" style="color:var(--pink)"></i> Negócio vs Pessoal</div>
+          <div class="chart-subtitle">Classificação de despesas</div>
+          <canvas id="chartBizPersonal"></canvas>
+        </div>
+      </div>
+
+      <!-- Próximas Faturas -->
+      <div class="table-card fade-in">
+        <div class="table-header">
+          <h3><i class="fas fa-clock" style="color:var(--yellow);margin-right:8px"></i>Próximas Faturas & Compromissos</h3>
+          <div class="table-filters">
+            <span class="filter-chip active">Todos</span>
+            <span class="filter-chip">Faturas</span>
+            <span class="filter-chip">Boletos</span>
+            <span class="filter-chip">Assinaturas</span>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Descrição</th><th>Tipo</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Fatura Nubank</strong></td><td><span class="tag cat">Fatura</span></td><td>20/03/2026</td><td class="text-red">R$ 8.432,00</td><td><span class="status-dot" style="background:var(--yellow)"></span>Pendente</td></tr>
+            <tr><td><strong>Fatura Itaú Platinum</strong></td><td><span class="tag cat">Fatura</span></td><td>22/03/2026</td><td class="text-red">R$ 12.890,00</td><td><span class="status-dot" style="background:var(--yellow)"></span>Pendente</td></tr>
+            <tr><td><strong>AWS Cloud Services</strong></td><td><span class="tag business">Assinatura</span></td><td>25/03/2026</td><td class="text-red">R$ 2.340,00</td><td><span class="status-dot" style="background:var(--green)"></span>Automático</td></tr>
+            <tr><td><strong>Aluguel Escritório</strong></td><td><span class="tag personal">Boleto</span></td><td>01/04/2026</td><td class="text-red">R$ 4.500,00</td><td><span class="status-dot" style="background:var(--text3)"></span>Agendado</td></tr>
+            <tr><td><strong>Recebimento — Cliente XYZ</strong></td><td><span class="tag" style="background:rgba(34,197,94,.15);color:var(--green)">Receita</span></td><td>28/03/2026</td><td class="text-green">R$ 18.500,00</td><td><span class="status-dot" style="background:var(--cyan)"></span>Confirmado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== TRANSACTIONS ===== -->
+    <div class="page" id="page-transactions">
+      <div class="kpi-grid fade-in">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(99,102,241,.15);color:var(--accent2)"><i class="fas fa-list"></i></div></div><div class="kpi-value">347</div><div class="kpi-label">Total Transações</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--green)"><i class="fas fa-check-circle"></i></div></div><div class="kpi-value">312</div><div class="kpi-label">Classificadas</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(234,179,8,.15);color:var(--yellow)"><i class="fas fa-question-circle"></i></div></div><div class="kpi-value">35</div><div class="kpi-label">Pendentes Revisão</div></div>
+      </div>
+      <div class="table-card fade-in">
+        <div class="table-header">
+          <h3>Todas as Transações</h3>
+          <div class="table-filters">
+            <span class="filter-chip active" onclick="filterTransactions('all')">Todos</span>
+            <span class="filter-chip" onclick="filterTransactions('business')">Negócio</span>
+            <span class="filter-chip" onclick="filterTransactions('personal')">Pessoal</span>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Cartão</th><th>Tipo</th><th>Valor</th><th>Ações</th></tr></thead>
+          <tbody id="transactionsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== UPLOAD ===== -->
+    <div class="page" id="page-upload">
+      <div class="upload-zone" id="uploadZone" onclick="simulateUpload()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <h3>Arraste ou clique para enviar faturas</h3>
+        <p>Suporte a PDF de faturas de Nubank, Itaú, Bradesco, Inter, C6 e outros</p>
+        <p class="text-xs text-muted mt-4">Processamento automático via OCR + IA</p>
+      </div>
+      <div class="upload-pipeline mt-4" id="uploadPipeline" style="display:none">
+        <div class="pipeline-step" id="step1"><div class="step-icon"><i class="fas fa-file-pdf"></i></div><div class="step-label">Upload PDF</div><div class="step-sublabel">Recebendo arquivo</div></div>
+        <div class="pipeline-connector" id="conn1"></div>
+        <div class="pipeline-step" id="step2"><div class="step-icon"><i class="fas fa-eye"></i></div><div class="step-label">OCR + Leitura</div><div class="step-sublabel">Extraindo texto</div></div>
+        <div class="pipeline-connector" id="conn2"></div>
+        <div class="pipeline-step" id="step3"><div class="step-icon"><i class="fas fa-brain"></i></div><div class="step-label">IA Parsing</div><div class="step-sublabel">Classificando</div></div>
+        <div class="pipeline-connector" id="conn3"></div>
+        <div class="pipeline-step" id="step4"><div class="step-icon"><i class="fas fa-database"></i></div><div class="step-label">Banco de Dados</div><div class="step-sublabel">Salvando</div></div>
+        <div class="pipeline-connector" id="conn4"></div>
+        <div class="pipeline-step" id="step5"><div class="step-icon"><i class="fas fa-chart-line"></i></div><div class="step-label">Dashboard</div><div class="step-sublabel">Atualizado</div></div>
+      </div>
+      <div id="uploadResults" style="display:none" class="mt-4">
+        <div class="table-card">
+          <div class="table-header"><h3><i class="fas fa-magic" style="color:var(--accent2);margin-right:8px"></i>Transações Extraídas (23 encontradas)</h3><button class="topbar-btn primary" onclick="approveAll()"><i class="fas fa-check"></i> Aprovar Todas</button></div>
+          <table>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Categoria (IA)</th><th>Tipo</th><th>Valor</th><th>Confiança</th></tr></thead>
+            <tbody>
+              <tr><td>03/03</td><td>UBER *TRIP</td><td><span class="tag cat">Transporte</span></td><td><span class="tag business">Negócio</span></td><td>R$ 34,90</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:95%;background:var(--green)"></div></div></td></tr>
+              <tr><td>04/03</td><td>AWS SERVICES</td><td><span class="tag cat">Tecnologia</span></td><td><span class="tag business">Negócio</span></td><td>R$ 1.245,00</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:98%;background:var(--green)"></div></div></td></tr>
+              <tr><td>05/03</td><td>IFOOD *RESTAURANTE</td><td><span class="tag cat">Alimentação</span></td><td><span class="tag personal">Pessoal</span></td><td>R$ 67,80</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:88%;background:var(--green)"></div></div></td></tr>
+              <tr><td>06/03</td><td>GOOGLE ADS</td><td><span class="tag cat">Marketing</span></td><td><span class="tag business">Negócio</span></td><td>R$ 3.200,00</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:97%;background:var(--green)"></div></div></td></tr>
+              <tr><td>07/03</td><td>MERCADO LIVRE</td><td><span class="tag cat">Suprimentos</span></td><td><span class="tag business">Negócio</span></td><td>R$ 890,00</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:72%;background:var(--yellow)"></div></div></td></tr>
+              <tr><td>08/03</td><td>SPOTIFY PREMIUM</td><td><span class="tag cat">Entretenimento</span></td><td><span class="tag personal">Pessoal</span></td><td>R$ 34,90</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:99%;background:var(--green)"></div></div></td></tr>
+              <tr><td>10/03</td><td>JADLOG FRETE</td><td><span class="tag cat">Logística</span></td><td><span class="tag business">Negócio</span></td><td>R$ 456,00</td><td><div class="progress-bar" style="width:80px"><div class="fill" style="width:93%;background:var(--green)"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CALENDAR ===== -->
+    <div class="page" id="page-calendar">
+      <div class="cashflow-summary fade-in">
+        <div class="cashflow-box income"><div class="cf-label">A Receber (Março)</div><div class="cf-value">R$ 89.450</div><div class="text-xs text-muted">12 recebimentos</div></div>
+        <div class="cashflow-box expense"><div class="cf-label">A Pagar (Março)</div><div class="cf-value">R$ 47.832</div><div class="text-xs text-muted">28 compromissos</div></div>
+        <div class="cashflow-box balance"><div class="cf-label">Saldo Projetado</div><div class="cf-value">R$ 41.618</div><div class="text-xs text-muted">Projeção positiva</div></div>
+      </div>
+      <div class="calendar-container fade-in">
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+            <span id="calendarMonth">Março 2026</span>
+            <button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="calendar-views">
+            <button class="active">Mês</button>
+            <button>Semana</button>
+            <button>Dia</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+      <div class="chart-card mt-4 fade-in">
+        <div class="chart-title"><i class="fas fa-chart-area" style="color:var(--cyan)"></i> Projeção de Fluxo de Caixa</div>
+        <div class="chart-subtitle">Próximos 30 dias — entradas vs saídas acumuladas</div>
+        <canvas id="chartCashflowProjection"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <div class="page" id="page-analytics">
+      <div class="kpi-grid fade-in">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:var(--cyan)"><i class="fas fa-truck"></i></div></div><div class="kpi-value">R$ 8.920</div><div class="kpi-label">Custos Logística</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(99,102,241,.15);color:var(--accent2)"><i class="fas fa-code"></i></div></div><div class="kpi-value">R$ 6.780</div><div class="kpi-label">Custos SaaS/Tech</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(249,115,22,.15);color:var(--orange)"><i class="fas fa-bullhorn"></i></div></div><div class="kpi-value">R$ 9.400</div><div class="kpi-label">Custos Ads/Marketing</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(236,72,153,.15);color:var(--pink)"><i class="fas fa-users"></i></div></div><div class="kpi-value">R$ 18.500</div><div class="kpi-label">Custos Equipe</div></div>
+      </div>
+      <div class="chart-grid equal fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-store" style="color:var(--orange)"></i> Top 10 Fornecedores</div>
+          <div class="chart-subtitle">Maiores gastos por fornecedor</div>
+          <canvas id="chartSuppliers"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-redo" style="color:var(--accent2)"></i> Gastos Recorrentes Detectados</div>
+          <div class="chart-subtitle">Identificados automaticamente pela IA</div>
+          <div id="recurringList"></div>
+        </div>
+      </div>
+      <div class="chart-grid fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-chart-bar" style="color:var(--green)"></i> Custos Operacionais por Mês</div>
+          <div class="chart-subtitle">Frete, SaaS, Ads e Equipe — últimos 6 meses</div>
+          <canvas id="chartOperational"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i> Anomalias Detectadas</div>
+          <div class="chart-subtitle">Gastos fora do padrão</div>
+          <div id="anomaliesList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CASHFLOW ===== -->
+    <div class="page" id="page-cashflow">
+      <div class="cashflow-summary fade-in">
+        <div class="cashflow-box income"><div class="cf-label">Entradas Realizadas</div><div class="cf-value">R$ 62.300</div><div class="text-xs text-muted">vs R$ 89.450 projetado</div></div>
+        <div class="cashflow-box expense"><div class="cf-label">Saídas Realizadas</div><div class="cf-value">R$ 31.200</div><div class="text-xs text-muted">vs R$ 47.832 projetado</div></div>
+        <div class="cashflow-box balance"><div class="cf-label">Caixa Atual</div><div class="cf-value">R$ 124.850</div><div class="text-xs text-muted">Conta principal + reservas</div></div>
+      </div>
+      <div class="chart-card fade-in mb-6">
+        <div class="chart-title"><i class="fas fa-water" style="color:var(--cyan)"></i> Fluxo de Caixa Diário</div>
+        <div class="chart-subtitle">Entradas, saídas e saldo acumulado — Março 2026</div>
+        <canvas id="chartDailyCashflow"></canvas>
+      </div>
+      <div class="chart-grid equal fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-arrow-down" style="color:var(--green)"></i> Principais Receitas</div>
+          <div class="chart-subtitle">Fontes de receita do mês</div>
+          <canvas id="chartRevenueSources"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-arrow-up" style="color:var(--red)"></i> Maiores Despesas</div>
+          <div class="chart-subtitle">Categorias de maior gasto</div>
+          <canvas id="chartExpenseCategories"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ALERTS ===== -->
+    <div class="page" id="page-alerts">
+      <div class="kpi-grid fade-in" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(239,68,68,.15);color:var(--red)"><i class="fas fa-exclamation-circle"></i></div></div><div class="kpi-value">2</div><div class="kpi-label">Alertas Críticos</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(234,179,8,.15);color:var(--yellow)"><i class="fas fa-exclamation-triangle"></i></div></div><div class="kpi-value">3</div><div class="kpi-label">Avisos</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:var(--cyan)"><i class="fas fa-info-circle"></i></div></div><div class="kpi-value">5</div><div class="kpi-label">Informativos</div></div>
+      </div>
+      <div class="fade-in" id="alertsList">
+        <div class="alert-card danger"><div class="alert-icon"><i class="fas fa-credit-card"></i></div><div class="alert-content"><h4>Limite de crédito alto — Itaú Platinum</h4><p>Utilização de 87% do limite (R$ 12.890 de R$ 15.000). Considere redistribuir despesas ou solicitar aumento.</p></div></div>
+        <div class="alert-card danger"><div class="alert-icon"><i class="fas fa-chart-line"></i></div><div class="alert-content"><h4>Fluxo de caixa negativo previsto para Abril</h4><p>Projeção indica saldo negativo de R$ -8.200 na segunda quinzena de abril. Ação recomendada: antecipar recebíveis ou postergar pagamentos não essenciais.</p></div></div>
+        <div class="alert-card warning"><div class="alert-icon"><i class="fas fa-arrow-up"></i></div><div class="alert-content"><h4>Gasto com Marketing 45% acima da média</h4><p>Google Ads + Meta Ads somaram R$ 9.400 este mês vs média de R$ 6.500. Verifique o ROI das campanhas.</p></div></div>
+        <div class="alert-card warning"><div class="alert-icon"><i class="fas fa-calendar-times"></i></div><div class="alert-content"><h4>Fatura Nubank vence em 3 dias</h4><p>Fatura de R$ 8.432,00 com vencimento em 20/03/2026. Pagamento não detectado.</p></div></div>
+        <div class="alert-card warning"><div class="alert-icon"><i class="fas fa-sync"></i></div><div class="alert-content"><h4>Nova assinatura detectada: Figma Teams</h4><p>Cobrança recorrente de R$ 450,00/mês identificada. Confirme se é autorizada.</p></div></div>
+        <div class="alert-card info"><div class="alert-icon"><i class="fas fa-lightbulb"></i></div><div class="alert-content"><h4>Oportunidade: Renegociação de frete</h4><p>Gastos com Jadlog aumentaram 30% em 3 meses. Considere cotação com outros operadores ou renegociação de tabela.</p></div></div>
+        <div class="alert-card info"><div class="alert-icon"><i class="fas fa-piggy-bank"></i></div><div class="alert-content"><h4>Economia potencial: Assinaturas duplicadas</h4><p>Zoom (R$ 120/mês) e Google Meet (R$ 89/mês) — considere consolidar em uma plataforma. Economia estimada: R$ 1.068/ano.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ===== COMPANIES ===== -->
+    <div class="page" id="page-companies">
+      <div class="company-cards fade-in">
+        <div class="company-card selected" onclick="selectCompany(this,'Lizzon Ltda')">
+          <h4><i class="fas fa-building" style="color:var(--accent2);margin-right:8px"></i>Lizzon Ltda</h4>
+          <div class="company-type">E-commerce & Logística — CNPJ: 12.345.678/0001-90</div>
+          <div class="company-stats">
+            <div class="stat"><div class="stat-val text-red">R$ 32.4K</div><div class="stat-label">Despesas</div></div>
+            <div class="stat"><div class="stat-val text-green">R$ 67.2K</div><div class="stat-label">Receitas</div></div>
+            <div class="stat"><div class="stat-val text-accent">3</div><div class="stat-label">Cartões</div></div>
+            <div class="stat"><div class="stat-val text-yellow">2</div><div class="stat-label">Centros Custo</div></div>
+          </div>
+        </div>
+        <div class="company-card" onclick="selectCompany(this,'Projetos Pessoais')">
+          <h4><i class="fas fa-user-tie" style="color:var(--pink);margin-right:8px"></i>Projetos Pessoais</h4>
+          <div class="company-type">Pessoa Física — CPF: ***.***.***-00</div>
+          <div class="company-stats">
+            <div class="stat"><div class="stat-val text-red">R$ 9.6K</div><div class="stat-label">Despesas</div></div>
+            <div class="stat"><div class="stat-val text-green">R$ 12.0K</div><div class="stat-label">Receitas</div></div>
+            <div class="stat"><div class="stat-val text-accent">2</div><div class="stat-label">Cartões</div></div>
+            <div class="stat"><div class="stat-val text-yellow">1</div><div class="stat-label">Centros Custo</div></div>
+          </div>
+        </div>
+        <div class="company-card" onclick="selectCompany(this,'UniverSaaS Tech')">
+          <h4><i class="fas fa-rocket" style="color:var(--cyan);margin-right:8px"></i>UniverSaaS Tech</h4>
+          <div class="company-type">SaaS & Tecnologia — CNPJ: 98.765.432/0001-10</div>
+          <div class="company-stats">
+            <div class="stat"><div class="stat-val text-red">R$ 5.8K</div><div class="stat-label">Despesas</div></div>
+            <div class="stat"><div class="stat-val text-green">R$ 10.2K</div><div class="stat-label">Receitas</div></div>
+            <div class="stat"><div class="stat-val text-accent">1</div><div class="stat-label">Cartões</div></div>
+            <div class="stat"><div class="stat-val text-yellow">3</div><div class="stat-label">Centros Custo</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card fade-in">
+        <div class="chart-title"><i class="fas fa-sitemap" style="color:var(--accent2)"></i> Centros de Custo — Lizzon Ltda</div>
+        <div class="chart-subtitle">Distribuição de despesas por centro de custo</div>
+        <canvas id="chartCostCenters"></canvas>
+      </div>
+      <div class="table-card fade-in mt-4">
+        <div class="table-header"><h3><i class="fas fa-users" style="color:var(--cyan);margin-right:8px"></i>Equipe Financeira</h3><button class="topbar-btn"><i class="fas fa-plus"></i> Convidar</button></div>
+        <table>
+          <thead><tr><th>Nome</th><th>Email</th><th>Função</th><th>Empresas</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Diego</strong></td><td>diegoxp12@me.com</td><td><span class="tag business">Admin</span></td><td>Todas</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong>Ana Silva</strong></td><td>ana@lizzon.com</td><td><span class="tag cat">Financeiro</span></td><td>Lizzon</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong>Carlos Mendes</strong></td><td>carlos@lizzon.com</td><td><span class="tag personal">Visualização</span></td><td>Lizzon, UniverSaaS</td><td><span class="status-dot" style="background:var(--yellow)"></span>Pendente</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CARDS ===== -->
+    <div class="page" id="page-cards">
+      <div class="kpi-grid fade-in">
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon" style="background:rgba(138,43,226,.15);color:#9333ea"><i class="fas fa-credit-card"></i></div></div>
+          <div class="kpi-value" style="font-size:20px">Nubank</div>
+          <div class="kpi-label">Limite: R$ 12.000 | Usado: R$ 8.432 (70%)</div>
+          <div class="progress-bar mt-4"><div class="fill" style="width:70%;background:var(--yellow)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon" style="background:rgba(249,115,22,.15);color:var(--orange)"><i class="fas fa-credit-card"></i></div></div>
+          <div class="kpi-value" style="font-size:20px">Itaú Platinum</div>
+          <div class="kpi-label">Limite: R$ 15.000 | Usado: R$ 12.890 (86%)</div>
+          <div class="progress-bar mt-4"><div class="fill" style="width:86%;background:var(--red)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--green)"><i class="fas fa-credit-card"></i></div></div>
+          <div class="kpi-value" style="font-size:20px">Inter Black</div>
+          <div class="kpi-label">Limite: R$ 20.000 | Usado: R$ 6.510 (33%)</div>
+          <div class="progress-bar mt-4"><div class="fill" style="width:33%;background:var(--green)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:var(--cyan)"><i class="fas fa-university"></i></div></div>
+          <div class="kpi-value" style="font-size:20px">Conta Itaú PJ</div>
+          <div class="kpi-label">Saldo: R$ 45.320,00</div>
+          <div class="progress-bar mt-4"><div class="fill" style="width:100%;background:var(--cyan)"></div></div>
+        </div>
+      </div>
+      <div class="chart-card fade-in">
+        <div class="chart-title"><i class="fas fa-chart-bar" style="color:var(--accent2)"></i> Uso de Limite por Cartão</div>
+        <div class="chart-subtitle">Comparação de utilização</div>
+        <canvas id="chartCardLimits"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== AUTOMATION ===== -->
+    <div class="page" id="page-automation">
+      <div class="kpi-grid fade-in" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:var(--green)"><i class="fas fa-check-circle"></i></div></div><div class="kpi-value">12</div><div class="kpi-label">Automações Ativas</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(99,102,241,.15);color:var(--accent2)"><i class="fas fa-sync"></i></div></div><div class="kpi-value">347</div><div class="kpi-label">Execuções este mês</div></div>
+        <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon" style="background:rgba(6,182,212,.15);color:var(--cyan)"><i class="fas fa-clock"></i></div></div><div class="kpi-value">42h</div><div class="kpi-label">Tempo Economizado</div></div>
+      </div>
+      <div class="table-card fade-in">
+        <div class="table-header"><h3><i class="fas fa-robot" style="color:var(--accent2);margin-right:8px"></i>Pipelines Ativos</h3><button class="topbar-btn primary"><i class="fas fa-plus"></i> Novo Pipeline</button></div>
+        <table>
+          <thead><tr><th>Pipeline</th><th>Fonte</th><th>Frequência</th><th>Última Execução</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong><i class="fas fa-envelope" style="color:var(--red);margin-right:6px"></i>Gmail → Faturas PDF</strong></td><td>Gmail</td><td>Diária</td><td>Hoje, 06:00</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong><i class="fab fa-google-drive" style="color:var(--yellow);margin-right:6px"></i>Google Drive Sync</strong></td><td>Google Drive</td><td>A cada 6h</td><td>Hoje, 12:00</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong><i class="fas fa-file-pdf" style="color:var(--orange);margin-right:6px"></i>PDF → OCR → IA → DB</strong></td><td>Upload Manual</td><td>On-demand</td><td>Ontem, 15:30</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong><i class="fas fa-calendar" style="color:var(--cyan);margin-right:6px"></i>Atualização Calendário</strong></td><td>Banco de Dados</td><td>Diária</td><td>Hoje, 00:00</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+            <tr><td><strong><i class="fas fa-bell" style="color:var(--pink);margin-right:6px"></i>Alertas de Vencimento</strong></td><td>Calendário</td><td>Diária</td><td>Hoje, 07:00</td><td><span class="status-dot" style="background:var(--green)"></span>Ativo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="page" id="page-settings">
+      <div class="chart-grid equal fade-in">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-user-cog" style="color:var(--accent2)"></i> Perfil</div>
+          <div style="margin-top:16px">
+            <div class="form-group mb-4"><label style="font-size:12px;color:var(--text3);margin-bottom:4px;display:block">Nome</label><input style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px" value="Diego"></div>
+            <div class="form-group mb-4"><label style="font-size:12px;color:var(--text3);margin-bottom:4px;display:block">Email</label><input style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px" value="diegoxp12@me.com"></div>
+            <div class="form-group mb-4"><label style="font-size:12px;color:var(--text3);margin-bottom:4px;display:block">Moeda padrão</label><select style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px"><option>BRL (Real Brasileiro)</option><option>USD (US Dollar)</option><option>EUR (Euro)</option></select></div>
+            <button class="topbar-btn primary">Salvar Alterações</button>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fas fa-plug" style="color:var(--green)"></i> Integrações</div>
+          <div style="margin-top:16px">
+            <div class="alert-card info mb-4" style="margin-bottom:12px"><div class="alert-icon"><i class="fab fa-google"></i></div><div class="alert-content"><h4>Gmail</h4><p style="color:var(--green)">Conectado — diegoxp12@me.com</p></div></div>
+            <div class="alert-card info mb-4" style="margin-bottom:12px"><div class="alert-icon"><i class="fab fa-google-drive"></i></div><div class="alert-content"><h4>Google Drive</h4><p style="color:var(--green)">Conectado — /Financeiro/Faturas</p></div></div>
+            <div class="alert-card" style="border-left:3px solid var(--text3);margin-bottom:12px"><div class="alert-icon" style="background:var(--bg3);color:var(--text3)"><i class="fas fa-university"></i></div><div class="alert-content"><h4>Open Banking</h4><p style="color:var(--text3)">Não conectado — Clique para configurar</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: Add Transaction -->
+<div class="modal-overlay" id="modal-addTransaction">
+  <div class="modal">
+    <h3><i class="fas fa-plus-circle" style="color:var(--accent2)"></i> Nova Transação</h3>
+    <div class="form-group"><label>Descrição</label><input placeholder="Ex: Google Ads, Aluguel, Uber..."></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Valor (R$)</label><input type="number" placeholder="0,00"></div>
+      <div class="form-group"><label>Data</label><input type="date" value="2026-03-17"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Categoria</label><select><option>Tecnologia</option><option>Alimentação</option><option>Transporte</option><option>Marketing</option><option>Logística</option><option>Equipe</option><option>Escritório</option><option>Entretenimento</option><option>Outros</option></select></div>
+      <div class="form-group"><label>Tipo</label><select><option>Negócio</option><option>Pessoal</option></select></div>
+    </div>
+    <div class="form-group"><label>Cartão / Conta</label><select><option>Nubank</option><option>Itaú Platinum</option><option>Inter Black</option><option>Conta Itaú PJ</option></select></div>
+    <div class="form-group"><label>Observações</label><textarea rows="2" placeholder="Notas opcionais..."></textarea></div>
+    <div class="modal-actions">
+      <button class="topbar-btn" onclick="closeModal('addTransaction')">Cancelar</button>
+      <button class="topbar-btn primary" onclick="closeModal('addTransaction')"><i class="fas fa-check"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== NAVIGATION ====================
+const pageTitles = {
+  dashboard: ['Dashboard Executivo', 'Visão geral financeira — Março 2026'],
+  transactions: ['Transações', 'Gestão e classificação de transações'],
+  upload: ['Upload de Faturas', 'Envie PDFs para processamento automático'],
+  calendar: ['Calendário Financeiro', 'Contas a pagar, receber e compromissos'],
+  analytics: ['Análises Avançadas', 'Inteligência financeira e detecção de padrões'],
+  cashflow: ['Fluxo de Caixa', 'Projeção e controle de entradas e saídas'],
+  alerts: ['Alertas & Riscos', 'Monitoramento inteligente de saúde financeira'],
+  companies: ['Empresas & Equipe', 'Multi-empresa, centros de custo e multiusuário'],
+  cards: ['Cartões & Bancos', 'Gestão de limites e contas bancárias'],
+  automation: ['Automação', 'Pipelines automáticos e integrações'],
+  settings: ['Configurações', 'Perfil, integrações e preferências'],
+};
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const page = document.getElementById('page-' + p);
+  if (page) { page.classList.add('active'); page.classList.add('fade-in'); }
+  const nav = document.querySelector(`[data-page="${p}"]`);
+  if (nav) nav.classList.add('active');
+  if (pageTitles[p]) {
+    document.getElementById('pageTitle').textContent = pageTitles[p][0];
+    document.getElementById('pageSubtitle').textContent = pageTitles[p][1];
+  }
+  if (p === 'dashboard') initDashboardCharts();
+  if (p === 'calendar') initCalendar();
+  if (p === 'analytics') initAnalyticsCharts();
+  if (p === 'cashflow') initCashflowCharts();
+  if (p === 'cards') initCardCharts();
+  if (p === 'companies') initCompanyCharts();
+}
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => showPage(item.dataset.page));
+});
+function openModal(id) { document.getElementById('modal-' + id).classList.add('show'); }
+function closeModal(id) { document.getElementById('modal-' + id).classList.remove('show'); }
+
+// ==================== CHART DEFAULTS ====================
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(30,41,59,0.5)';
+Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+const chartInstances = {};
+function getOrCreate(id, config) {
+  if (chartInstances[id]) chartInstances[id].destroy();
+  chartInstances[id] = new Chart(document.getElementById(id), config);
+  return chartInstances[id];
+}
+
+// ==================== DASHBOARD CHARTS ====================
+function initDashboardCharts() {
+  getOrCreate('chartEvolution', {
+    type: 'line',
+    data: {
+      labels: ['Out','Nov','Dez','Jan','Fev','Mar'],
+      datasets: [
+        { label: 'Receitas', data: [62000,71000,68000,74000,82000,89450], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 },
+        { label: 'Despesas', data: [41000,45000,52000,43000,39000,47832], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { callback: v => 'R$' + (v/1000) + 'K' } } } }
+  });
+  getOrCreate('chartCategories', {
+    type: 'doughnut',
+    data: {
+      labels: ['Tecnologia','Marketing','Logística','Equipe','Alimentação','Transporte','Escritório','Outros'],
+      datasets: [{ data: [6780,9400,8920,18500,1890,1200,4500,2642], backgroundColor: ['#6366f1','#f97316','#06b6d4','#ec4899','#22c55e','#eab308','#8b5cf6','#64748b'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } } } }
+  });
+  getOrCreate('chartCards', {
+    type: 'bar',
+    data: {
+      labels: ['Nubank','Itaú Platinum','Inter Black'],
+      datasets: [{ label: 'Gasto', data: [8432,12890,6510], backgroundColor: ['#9333ea','#f97316','#22c55e'], borderRadius: 6 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => 'R$' + (v/1000) + 'K' } } } }
+  });
+  getOrCreate('chartBizPersonal', {
+    type: 'doughnut',
+    data: {
+      labels: ['Negócio','Pessoal'],
+      datasets: [{ data: [38200,9632], backgroundColor: ['#6366f1','#ec4899'] }]
+    },
+    options: { responsive: true, cutout: '60%', plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+// ==================== TRANSACTIONS ====================
+const transactions = [
+  { date: '17/03', desc: 'Google Ads', cat: 'Marketing', card: 'Itaú Platinum', type: 'business', amount: 3200 },
+  { date: '16/03', desc: 'AWS Services', cat: 'Tecnologia', card: 'Nubank', type: 'business', amount: 1245 },
+  { date: '15/03', desc: 'iFood Restaurante', cat: 'Alimentação', card: 'Nubank', type: 'personal', amount: 67.80 },
+  { date: '15/03', desc: 'Jadlog Frete', cat: 'Logística', card: 'Inter Black', type: 'business', amount: 456 },
+  { date: '14/03', desc: 'Uber Trip', cat: 'Transporte', card: 'Nubank', type: 'business', amount: 34.90 },
+  { date: '14/03', desc: 'Spotify Premium', cat: 'Entretenimento', card: 'Nubank', type: 'personal', amount: 34.90 },
+  { date: '13/03', desc: 'Figma Teams', cat: 'Tecnologia', card: 'Itaú Platinum', type: 'business', amount: 450 },
+  { date: '12/03', desc: 'Mercado Livre', cat: 'Suprimentos', card: 'Inter Black', type: 'business', amount: 890 },
+  { date: '11/03', desc: 'ChatGPT Plus', cat: 'Tecnologia', card: 'Nubank', type: 'business', amount: 110 },
+  { date: '10/03', desc: 'Aluguel Escritório', cat: 'Escritório', card: 'Conta PJ', type: 'business', amount: 4500 },
+  { date: '09/03', desc: 'Salário — Ana Silva', cat: 'Equipe', card: 'Conta PJ', type: 'business', amount: 6500 },
+  { date: '08/03', desc: 'Meta Ads', cat: 'Marketing', card: 'Itaú Platinum', type: 'business', amount: 6200 },
+  { date: '07/03', desc: 'Supermercado Extra', cat: 'Alimentação', card: 'Nubank', type: 'personal', amount: 432 },
+  { date: '06/03', desc: 'Vercel Pro', cat: 'Tecnologia', card: 'Nubank', type: 'business', amount: 120 },
+  { date: '05/03', desc: 'Correios SEDEX', cat: 'Logística', card: 'Inter Black', type: 'business', amount: 234 },
+];
+function renderTransactions(filter) {
+  const tbody = document.getElementById('transactionsBody');
+  const filtered = filter === 'all' ? transactions : transactions.filter(t => t.type === filter);
+  tbody.innerHTML = filtered.map(t => `
+    <tr>
+      <td>${t.date}</td>
+      <td><strong>${t.desc}</strong></td>
+      <td><span class="tag cat">${t.cat}</span></td>
+      <td>${t.card}</td>
+      <td><span class="tag ${t.type}">${t.type === 'business' ? 'Negócio' : 'Pessoal'}</span></td>
+      <td class="text-red">R$ ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+      <td><button class="topbar-btn" style="padding:4px 8px;font-size:11px"><i class="fas fa-edit"></i></button></td>
+    </tr>
+  `).join('');
+}
+function filterTransactions(f) {
+  document.querySelectorAll('#page-transactions .filter-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTransactions(f);
+}
+renderTransactions('all');
+
+// ==================== UPLOAD SIMULATION ====================
+function simulateUpload() {
+  const pipeline = document.getElementById('uploadPipeline');
+  const results = document.getElementById('uploadResults');
+  pipeline.style.display = 'flex';
+  results.style.display = 'none';
+  const steps = ['step1','step2','step3','step4','step5'];
+  const conns = ['conn1','conn2','conn3','conn4'];
+  steps.forEach(s => { document.getElementById(s).className = 'pipeline-step'; });
+  conns.forEach(c => { document.getElementById(c).className = 'pipeline-connector'; });
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) { document.getElementById(steps[i-1]).className = 'pipeline-step done'; if (i-1 < conns.length) document.getElementById(conns[i-1]).className = 'pipeline-connector active'; }
+    if (i < steps.length) { document.getElementById(steps[i]).className = 'pipeline-step active'; }
+    if (i >= steps.length) { clearInterval(interval); results.style.display = 'block'; results.classList.add('fade-in'); }
+    i++;
+  }, 800);
+}
+function approveAll() { alert('Todas as 23 transações foram aprovadas e salvas no banco de dados!'); }
+
+// ==================== CALENDAR ====================
+const calendarEvents = {
+  '2026-03-05': [{ text: 'Frete Jadlog', type: 'payable' }],
+  '2026-03-08': [{ text: 'Salário Ana', type: 'payable' }],
+  '2026-03-10': [{ text: 'Aluguel', type: 'payable' }, { text: 'Receita Cliente A', type: 'receivable' }],
+  '2026-03-15': [{ text: 'Assinatura AWS', type: 'subscription' }],
+  '2026-03-17': [{ text: 'Hoje', type: 'receivable' }],
+  '2026-03-20': [{ text: 'Fatura Nubank', type: 'invoice' }],
+  '2026-03-22': [{ text: 'Fatura Itaú', type: 'invoice' }],
+  '2026-03-25': [{ text: 'AWS', type: 'subscription' }, { text: 'Receita Serviço', type: 'receivable' }],
+  '2026-03-28': [{ text: 'Cliente XYZ', type: 'receivable' }],
+  '2026-03-30': [{ text: 'DAS Simples', type: 'payable' }],
+  '2026-04-01': [{ text: 'Aluguel', type: 'payable' }],
+  '2026-04-05': [{ text: 'Internet', type: 'subscription' }],
+};
+let currentMonth = 2, currentYear = 2026;
+function initCalendar() { renderCalendar(currentYear, currentMonth); initCashflowProjection(); }
+function changeMonth(d) { currentMonth += d; if (currentMonth > 11) { currentMonth = 0; currentYear++; } if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentYear, currentMonth); }
+function renderCalendar(year, month) {
+  const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('calendarMonth').textContent = months[month] + ' ' + year;
+  const grid = document.getElementById('calendarGrid');
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html = days.map(d => `<div class="calendar-day-header">${d}</div>`).join('');
+  const first = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  for (let i = 0; i < first; i++) { const d = new Date(year, month, -first + i + 1).getDate(); html += `<div class="calendar-cell other-month"><div class="day-number">${d}</div></div>`; }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+    const events = calendarEvents[dateStr] || [];
+    html += `<div class="calendar-cell${isToday ? ' today' : ''}">`;
+    html += `<div class="day-number">${d}</div>`;
+    events.forEach(e => {
+      const cls = e.type === 'payable' ? 'payable' : e.type === 'receivable' ? 'receivable' : e.type === 'subscription' ? 'subscription' : 'invoice';
+      html += `<div class="cal-event ${cls}">${e.text}</div>`;
+    });
+    html += '</div>';
+  }
+  const totalCells = first + daysInMonth;
+  const remaining = (7 - totalCells % 7) % 7;
+  for (let i = 1; i <= remaining; i++) html += `<div class="calendar-cell other-month"><div class="day-number">${i}</div></div>`;
+  grid.innerHTML = html;
+}
+function initCashflowProjection() {
+  const labels = Array.from({length:30}, (_, i) => `${i+1}/03`);
+  const income = [0,0,0,0,0,0,0,0,0,12000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18500,0,0,15000,0,0];
+  const expense = [0,0,0,-1200,0,0,0,-6500,0,-4500,0,0,-3200,0,-2340,0,0,0,0,-8432,0,-12890,0,0,-2340,0,0,0,0,-1800];
+  let bal = 45000;
+  const balance = income.map((inc, i) => { bal += inc + expense[i]; return bal; });
+  getOrCreate('chartCashflowProjection', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Saldo Projetado', data: balance, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.3 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => 'R$' + (v/1000).toFixed(0) + 'K' } } } }
+  });
+}
+
+// ==================== ANALYTICS CHARTS ====================
+function initAnalyticsCharts() {
+  getOrCreate('chartSuppliers', {
+    type: 'bar',
+    data: {
+      labels: ['Google Ads','Meta Ads','AWS','Jadlog','Aluguel','Ana Silva','Mercado Livre','Figma','Vercel','Correios'],
+      datasets: [{ label: 'Gasto Total', data: [9400,6200,2340,4560,4500,6500,2890,450,120,1234], backgroundColor: '#6366f1', borderRadius: 4 }]
+    },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => 'R$' + (v/1000).toFixed(1) + 'K' } } } }
+  });
+  getOrCreate('chartOperational', {
+    type: 'bar',
+    data: {
+      labels: ['Out','Nov','Dez','Jan','Fev','Mar'],
+      datasets: [
+        { label: 'Logística', data: [6200,7100,8400,7800,8200,8920], backgroundColor: '#06b6d4', borderRadius: 3 },
+        { label: 'SaaS/Tech', data: [4800,5200,5600,5900,6200,6780], backgroundColor: '#6366f1', borderRadius: 3 },
+        { label: 'Ads', data: [5400,6800,7200,6100,7800,9400], backgroundColor: '#f97316', borderRadius: 3 },
+        { label: 'Equipe', data: [15000,15000,16500,16500,18000,18500], backgroundColor: '#ec4899', borderRadius: 3 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => 'R$' + (v/1000) + 'K' } } } }
+  });
+  // Recurring expenses
+  const recurring = [
+    { name: 'AWS Services', amount: 'R$ 2.340/mês', months: 12, trend: 'up' },
+    { name: 'Google Ads', amount: 'R$ 3.200~9.400/mês', months: 12, trend: 'up' },
+    { name: 'Aluguel Escritório', amount: 'R$ 4.500/mês', months: 12, trend: 'stable' },
+    { name: 'Spotify', amount: 'R$ 34,90/mês', months: 8, trend: 'stable' },
+    { name: 'Figma Teams', amount: 'R$ 450/mês', months: 3, trend: 'new' },
+    { name: 'ChatGPT Plus', amount: 'R$ 110/mês', months: 6, trend: 'stable' },
+    { name: 'Vercel Pro', amount: 'R$ 120/mês', months: 5, trend: 'stable' },
+  ];
+  document.getElementById('recurringList').innerHTML = recurring.map(r => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div><strong style="font-size:13px">${r.name}</strong><br><span class="text-xs text-muted">${r.months} meses consecutivos</span></div>
+      <div style="text-align:right"><span style="font-size:13px;font-weight:600">${r.amount}</span><br><span class="text-xs ${r.trend === 'up' ? 'text-red' : r.trend === 'new' ? 'text-yellow' : 'text-green'}">${r.trend === 'up' ? '↑ Crescendo' : r.trend === 'new' ? '★ Nova' : '→ Estável'}</span></div>
+    </div>
+  `).join('');
+  // Anomalies
+  const anomalies = [
+    { desc: 'Google Ads gastou R$ 9.400 — 45% acima da média de R$ 6.500', severity: 'high' },
+    { desc: 'Mercado Livre com compra atípica de R$ 890 (média: R$ 200)', severity: 'medium' },
+    { desc: 'Jadlog frete acima de R$ 400 por envio (média anterior: R$ 280)', severity: 'medium' },
+  ];
+  document.getElementById('anomaliesList').innerHTML = anomalies.map(a => `
+    <div class="alert-card ${a.severity === 'high' ? 'danger' : 'warning'}" style="margin-bottom:8px">
+      <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="alert-content"><p style="color:var(--text)">${a.desc}</p></div>
+    </div>
+  `).join('');
+}
+
+// ==================== CASHFLOW CHARTS ====================
+function initCashflowCharts() {
+  const labels = Array.from({length:17}, (_, i) => `${i+1}/03`);
+  const inArr = [0,0,0,0,0,0,0,0,0,12000,0,0,0,0,0,0,8500];
+  const outArr = [0,0,0,-1200,0,0,0,-6500,0,-4500,-800,-450,-3200,0,-2340,-1100,0];
+  let bal = 45000;
+  const balArr = inArr.map((v, i) => { bal += v + outArr[i]; return bal; });
+  getOrCreate('chartDailyCashflow', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { type: 'line', label: 'Saldo', data: balArr, borderColor: '#6366f1', tension: 0.3, yAxisID: 'y1', pointRadius: 2 },
+        { label: 'Entradas', data: inArr, backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 3, yAxisID: 'y' },
+        { label: 'Saídas', data: outArr, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 3, yAxisID: 'y' },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { position: 'left', ticks: { callback: v => 'R$' + (v/1000).toFixed(0) + 'K' } }, y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { callback: v => 'R$' + (v/1000).toFixed(0) + 'K' } } } }
+  });
+  getOrCreate('chartRevenueSources', {
+    type: 'doughnut',
+    data: {
+      labels: ['Vendas Produto','Serviços','Recorrência SaaS','Consultoria','Outros'],
+      datasets: [{ data: [42000,22000,15000,8000,2450], backgroundColor: ['#22c55e','#06b6d4','#6366f1','#eab308','#64748b'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+  });
+  getOrCreate('chartExpenseCategories', {
+    type: 'doughnut',
+    data: {
+      labels: ['Equipe','Marketing','Logística','Tecnologia','Escritório','Outros'],
+      datasets: [{ data: [18500,9400,8920,6780,4500,5732], backgroundColor: ['#ec4899','#f97316','#06b6d4','#6366f1','#8b5cf6','#64748b'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+  });
+}
+
+// ==================== CARD CHARTS ====================
+function initCardCharts() {
+  getOrCreate('chartCardLimits', {
+    type: 'bar',
+    data: {
+      labels: ['Nubank','Itaú Platinum','Inter Black'],
+      datasets: [
+        { label: 'Utilizado', data: [8432,12890,6510], backgroundColor: ['rgba(147,51,234,0.8)','rgba(249,115,22,0.8)','rgba(34,197,94,0.8)'], borderRadius: 6 },
+        { label: 'Disponível', data: [3568,2110,13490], backgroundColor: ['rgba(147,51,234,0.2)','rgba(249,115,22,0.2)','rgba(34,197,94,0.2)'], borderRadius: 6 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => 'R$' + (v/1000) + 'K' } } } }
+  });
+}
+
+// ==================== COMPANY CHARTS ====================
+function initCompanyCharts() {
+  getOrCreate('chartCostCenters', {
+    type: 'bar',
+    data: {
+      labels: ['Operações','Marketing','Tecnologia','Administrativo','RH'],
+      datasets: [
+        { label: 'Lizzon', data: [12400,9400,4200,6800,6500], backgroundColor: '#6366f1', borderRadius: 4 },
+        { label: 'UniverSaaS', data: [0,1200,3800,800,0], backgroundColor: '#06b6d4', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: v => 'R$' + (v/1000) + 'K' } } } }
+  });
+}
+function selectCompany(el, name) {
+  document.querySelectorAll('.company-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('activeCompanyName').innerHTML = name + ' <i class="fas fa-chevron-down" style="font-size:11px"></i>';
+}
+
+// ==================== INIT ====================
+initDashboardCharts();
+
+// Responsive sidebar
+function checkMobile() {
+  const btn = document.getElementById('menuToggle');
+  if (window.innerWidth <= 1024) { btn.style.display = 'flex'; } else { btn.style.display = 'none'; }
+}
+window.addEventListener('resize', checkMobile);
+checkMobile();
+</script>
+</body>
+</html>
